@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExamCall 사용 설명서</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1558b0;
+      --surface: #f8f9fa;
+      --card: #ffffff;
+      --text: #202124;
+      --text-sub: #5f6368;
+      --border: #e0e0e0;
+      --server: #e8f5e9;
+      --server-accent: #2e7d32;
+      --client: #e3f2fd;
+      --client-accent: #1565c0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 8px; }
+    header p { font-size: 1.1rem; opacity: 0.9; }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.85rem;
+    }
+
+    main { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 48px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .icon { font-size: 1.5rem; }
+
+    /* 개요 카드 */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 600px) { .overview-grid { grid-template-columns: 1fr; } }
+
+    .role-card {
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--border);
+    }
+    .role-card.server { background: var(--server); border-color: #a5d6a7; }
+    .role-card.client { background: var(--client); border-color: #90caf9; }
+    .role-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .role-card.server h3 { color: var(--server-accent); }
+    .role-card.client h3 { color: var(--client-accent); }
+    .role-card ul { padding-left: 18px; }
+    .role-card li { margin-bottom: 6px; font-size: 0.95rem; }
+
+    /* 설치 */
+    .install-box {
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+    .install-box p { margin-bottom: 8px; font-size: 0.95rem; }
+    .install-box code {
+      display: block;
+      background: #fff;
+      border: 1px solid #ffe0b2;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #e65100;
+      font-family: 'Consolas', monospace;
+      margin-top: 8px;
+    }
+
+    /* 단계별 가이드 */
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+    .step {
+      display: flex;
+      gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      align-items: flex-start;
+    }
+    .step-num {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .server-step .step-num { background: var(--server-accent); }
+    .client-step .step-num { background: var(--client-accent); }
+    .step-content h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .step-content p { font-size: 0.93rem; color: var(--text-sub); }
+    .step-content .tip {
+      display: inline-block;
+      margin-top: 6px;
+      background: var(--surface);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      border: 1px solid var(--border);
+    }
+
+    /* 흐름도 */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .flow-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      text-align: center;
+      min-width: 110px;
+    }
+    .flow-box.server-box { border-color: #a5d6a7; background: var(--server); }
+    .flow-box.client-box { border-color: #90caf9; background: var(--client); }
+    .flow-arrow {
+      font-size: 1.4rem;
+      color: var(--text-sub);
+      padding: 0 8px;
+    }
+
+    /* 프로토콜 표 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    th {
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td { padding: 11px 16px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--surface); }
+    code.inline {
+      background: #f1f3f4;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.85rem;
+      font-family: 'Consolas', monospace;
+      color: #c62828;
+    }
+
+    /* FAQ */
+    .faq { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+    .faq-item .q {
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--primary-dark);
+    }
+    .faq-item .a { font-size: 0.93rem; color: var(--text-sub); }
+
+    footer {
+      text-align: center;
+      padding: 32px 16px;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📋 ExamCall</h1>
+  <p>같은 WiFi 환경의 태블릿 간 이름 호출 앱</p>
+  <div class="badge-row">
+    <span class="badge">Android 7.0+</span>
+    <span class="badge">WiFi 필요</span>
+    <span class="badge">한국어 TTS</span>
+    <span class="badge">서버 여러 대 지원</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- 개요 -->
+  <h2 class="section-title"><span class="icon">📌</span> 앱 개요</h2>
+  <div class="overview-grid">
+    <div class="role-card server">
+      <h3>🖥️ 서버 태블릿</h3>
+      <ul>
+        <li>호출할 이름 목록 추가 / 삭제</li>
+        <li>클라이언트가 호출하면 이름을 크게 표시</li>
+        <li>한국어 TTS로 <strong>"OOO 선생님 호출입니다"</strong> 읽어줌</li>
+        <li>여러 대 동시 운용 가능</li>
+      </ul>
+    </div>
+    <div class="role-card client">
+      <h3>📱 클라이언트 태블릿</h3>
+      <ul>
+        <li>WiFi 내 서버를 자동으로 탐색</li>
+        <li>연결할 서버 선택</li>
+        <li>이름 버튼을 눌러 서버에 호출 전송</li>
+        <li>언제든 다른 서버로 전환 가능</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 설치 -->
+  <h2 class="section-title"><span class="icon">📥</span> 설치 방법</h2>
+  <div class="install-box">
+    <p><strong>1.</strong> <a href="https://github.com/cute93/ExamCall/releases" style="color:#e65100">GitHub Releases</a>에서 <code>app-release.apk</code> 다운로드</p>
+    <p><strong>2.</strong> 태블릿에서 <strong>설정 → 보안 → 출처를 알 수 없는 앱 허용</strong> 후 APK 설치</p>
+    <p><strong>3.</strong> 한국어 TTS가 없다면 설치 필요:</p>
+    <code>설정 → 일반 관리 → 텍스트 음성 변환 → Google TTS → 언어 → 한국어 다운로드</code>
+  </div>
+
+  <!-- 서버 사용법 -->
+  <h2 class="section-title"><span class="icon">🖥️</span> 서버 태블릿 사용법</h2>
+  <div class="steps">
+    <div class="step server-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>앱 실행 → "서버 (명단 관리)" 선택</h4>
+        <p>역할 선택 화면에서 서버를 탭합니다.</p>
+      </div>
+    </div>
+    <div class="step server-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>서버 이름 입력</h4>
+        <p>클라이언트 목록에 표시될 서버 이름을 입력합니다. (예: 1반, 시험장A)</p>
+        <span class="tip">💡 같은 WiFi에 서버 여러 대 운용 시 이름으로 구별됩니다</span>
+      </div>
+    </div>
+    <div class="step server-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>명단 추가</h4>
+        <p>하단 입력창에 이름을 입력하고 추가 버튼을 탭합니다. 이름은 자동으로 클라이언트에 동기화됩니다.</p>
+      </div>
+    </div>
+    <div class="step server-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>호출 수신</h4>
+        <p>클라이언트가 버튼을 누르면 이름이 화면에 크게 표시되고 <strong>"OOO 선생님 호출입니다"</strong> 음성이 재생됩니다. 10초 후 자동으로 사라집니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 클라이언트 사용법 -->
+  <h2 class="section-title"><span class="icon">📱</span> 클라이언트 태블릿 사용법</h2>
+  <div class="steps">
+    <div class="step client-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>앱 실행 → "클라이언트 (호출 버튼)" 선택</h4>
+        <p>역할 선택 화면에서 클라이언트를 탭합니다.</p>
+      </div>
+    </div>
+    <div class="step client-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>서버 선택</h4>
+        <p>같은 WiFi 내 서버가 자동으로 탐색되어 목록에 표시됩니다. 원하는 서버를 탭합니다.</p>
+        <span class="tip">💡 서버가 보이지 않으면 서버 태블릿이 켜져 있는지 확인하세요</span>
+      </div>
+    </div>
+    <div class="step client-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>이름 버튼 탭 → 호출</h4>
+        <p>서버에 등록된 이름이 버튼으로 표시됩니다. 버튼을 탭하면 즉시 서버에 호출이 전송됩니다.</p>
+      </div>
+    </div>
+    <div class="step client-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>서버 변경</h4>
+        <p>상단 "서버 변경" 버튼을 탭하면 서버 목록으로 돌아가 다른 서버에 연결할 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통신 흐름 -->
+  <h2 class="section-title"><span class="icon">🔄</span> 통신 흐름</h2>
+  <div class="flow">
+    <div class="flow-box server-box">서버 태블릿<br><small>UDP 브로드캐스트</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">WiFi 네트워크<br><small>포트 9090</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box client-box">클라이언트<br><small>서버 자동 발견</small></div>
+  </div>
+  <br>
+  <div class="flow">
+    <div class="flow-box server-box">서버<br><small>명단 전송</small></div>
+    <div class="flow-arrow">⇄</div>
+    <div class="flow-box">WebSocket<br><small>포트 8080</small></div>
+    <div class="flow-arrow">⇄</div>
+    <div class="flow-box client-box">클라이언트<br><small>호출 전송</small></div>
+  </div>
+
+  <!-- 메시지 프로토콜 -->
+  <h2 class="section-title"><span class="icon">📡</span> 메시지 프로토콜</h2>
+  <table>
+    <thead>
+      <tr><th>방향</th><th>타입</th><th>형식</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>서버 → 브로드캐스트</td>
+        <td>UDP 발견</td>
+        <td><code class="inline">ExamCall:[IP]:[서버이름]</code></td>
+      </tr>
+      <tr>
+        <td>서버 → 클라이언트</td>
+        <td><code class="inline">name_list</code></td>
+        <td><code class="inline">{"type":"name_list","names":["이름1","이름2"]}</code></td>
+      </tr>
+      <tr>
+        <td>클라이언트 → 서버</td>
+        <td><code class="inline">call</code></td>
+        <td><code class="inline">{"type":"call","name":"홍길동"}</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FAQ -->
+  <h2 class="section-title"><span class="icon">❓</span> 자주 묻는 질문</h2>
+  <div class="faq">
+    <div class="faq-item">
+      <div class="q">Q. 서버가 클라이언트 목록에 나타나지 않아요.</div>
+      <div class="a">서버 태블릿과 클라이언트 태블릿이 <strong>같은 WiFi</strong>에 연결되어 있는지 확인하세요. 공유기의 AP 격리(AP Isolation) 기능이 켜져 있으면 통신이 차단됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">Q. TTS 음성이 영어로 나와요.</div>
+      <div class="a">설정 → 일반 관리 → 텍스트 음성 변환에서 Google TTS 엔진의 한국어 데이터를 다운로드하세요.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">Q. 앱을 재시작하면 명단이 사라지나요?</div>
+      <div class="a">아니요. 명단은 기기 내부에 자동 저장되어 재시작 후에도 유지됩니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">Q. 서버 여러 대를 동시에 운용할 수 있나요?</div>
+      <div class="a">가능합니다. 각 서버에 다른 이름을 부여하면 클라이언트에서 목록으로 표시되어 원하는 서버를 선택할 수 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="q">Q. 호출 알림이 10초보다 길게 표시되게 할 수 있나요?</div>
+      <div class="a">현재 버전은 10초 자동 소멸이 고정되어 있습니다. "확인" 버튼을 탭하면 즉시 닫을 수 있습니다.</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>ExamCall &copy; 2026 &nbsp;|&nbsp; <a href="https://github.com/cute93/ExamCall" target="_blank">GitHub</a></p>
+</footer>
+
+</body>
+</html>
