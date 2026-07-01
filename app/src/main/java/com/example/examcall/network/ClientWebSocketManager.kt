@@ -7,6 +7,7 @@ import okio.ByteString
 class ClientWebSocketManager(
     private val serverUrl: String,
     private val onNameList: (List<String>) -> Unit,
+    private val onAbsentList: (List<String>) -> Unit,
     private val onConnectionChanged: (Boolean) -> Unit,
 ) {
     private val client = OkHttpClient()
@@ -43,10 +44,11 @@ class ClientWebSocketManager(
     private fun handleMessage(text: String) {
         try {
             val json = org.json.JSONObject(text)
-            if (json.getString("type") == "name_list") {
-                val arr = json.getJSONArray("names")
-                val list = (0 until arr.length()).map { arr.getString(it) }
-                onNameList(list)
+            val arr = json.getJSONArray("names")
+            val list = (0 until arr.length()).map { arr.getString(it) }
+            when (json.getString("type")) {
+                "name_list" -> onNameList(list)
+                "absent_list" -> onAbsentList(list)
             }
         } catch (_: Exception) {}
     }

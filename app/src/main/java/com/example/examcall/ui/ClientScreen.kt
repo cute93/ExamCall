@@ -16,6 +16,7 @@ fun ClientScreen(
     serverName: String,
     names: List<String>,
     isConnected: Boolean,
+    absentNames: Set<String>,
     onCall: (String) -> Unit,
     onChangeServer: () -> Unit,
     onExit: () -> Unit
@@ -54,9 +55,15 @@ fun ClientScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(names) { name ->
+                    val isAbsent = name in absentNames
                     Button(
                         onClick = { onCall(name) },
-                        modifier = Modifier.fillMaxWidth().height(80.dp)
+                        enabled = !isAbsent,
+                        modifier = Modifier.fillMaxWidth().height(80.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                            disabledContentColor = MaterialTheme.colorScheme.error
+                        )
                     ) {
                         Text(name, fontSize = 20.sp)
                     }

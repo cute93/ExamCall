@@ -30,6 +30,9 @@ class ClientViewModel(application: Application) : AndroidViewModel(application) 
     private val _connectedServer = MutableStateFlow<ServerInfo?>(null)
     val connectedServer: StateFlow<ServerInfo?> = _connectedServer
 
+    private val _absentNames = MutableStateFlow<Set<String>>(emptySet())
+    val absentNames: StateFlow<Set<String>> = _absentNames
+
     private var wsManager: ClientWebSocketManager? = null
     private var udpJob: Job? = null
     private var pruneJob: Job? = null
@@ -74,6 +77,7 @@ class ClientViewModel(application: Application) : AndroidViewModel(application) 
         wsManager = ClientWebSocketManager(
             serverUrl = "ws://${server.ip}:8080",
             onNameList = { _names.value = it },
+            onAbsentList = { _absentNames.value = it.toSet() },
             onConnectionChanged = { _isConnected.value = it }
         ).also { it.connect() }
     }
@@ -84,6 +88,7 @@ class ClientViewModel(application: Application) : AndroidViewModel(application) 
         _connectedServer.value = null
         _isConnected.value = false
         _names.value = emptyList()
+        _absentNames.value = emptySet()
     }
 
     fun sendCall(name: String) {

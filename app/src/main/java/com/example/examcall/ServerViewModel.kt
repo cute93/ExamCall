@@ -28,6 +28,9 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
     private val _calledName = MutableStateFlow<String?>(null)
     val calledName: StateFlow<String?> = _calledName
 
+    private val _absentNames = MutableStateFlow<Set<String>>(emptySet())
+    val absentNames: StateFlow<Set<String>> = _absentNames
+
     private val _clientCount = MutableStateFlow(0)
     val clientCount: StateFlow<Int> = _clientCount
 
@@ -52,6 +55,10 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
         if (!saved.isNullOrBlank()) {
             _names.value = saved.split(",").filter { it.isNotBlank() }
         }
+        val savedAbsent = prefs.getString("absentNames", null)
+        if (!savedAbsent.isNullOrBlank()) {
+            _absentNames.value = savedAbsent.split(",").filter { it.isNotBlank() }.toSet()
+        }
     }
 
     fun startServer(name: String) {
@@ -67,6 +74,7 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
             onClientCountChanged = { _clientCount.value = it }
         ).also {
             it.broadcastNameList(_names.value)
+            it.broadcastAbsentList(_absentNames.value.toList())
             it.start()
         }
 
@@ -86,6 +94,18 @@ class ServerViewModel(application: Application) : AndroidViewModel(application) 
         _names.value = updated
         wsServer?.broadcastNameList(updated)
         saveNames(updated)
+        val updatedAbsent = _absentNames.value - name
+        _absentNames.value = updatedAbsent
+        wsServer?.broadcastAbsentList(updatedAbsent.toList())
+        prefs.edit().putString("absentNames", updatedAbsent.joinToString(",")).apply()
+    }
+
+    fun toggleAbsent(name: String) {
+        val updated = if (name in _absentNames.value) _absentNames.value - name
+                      else _absentNames.value + name
+        _absentNames.value = updated
+        wsServer?.broadcastAbsentList(updated.toList())
+        prefs.edit().putString("absentNames", updated.joinToString(",")).apply()
     }
 
     fun dismissCalledName() {

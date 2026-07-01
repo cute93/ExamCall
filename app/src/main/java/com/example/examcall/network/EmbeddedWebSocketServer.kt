@@ -13,11 +13,13 @@ class EmbeddedWebSocketServer(
 
     private val clients = Collections.synchronizedSet(HashSet<WebSocket>())
     private var currentNames: List<String> = emptyList()
+    private var currentAbsentNames: List<String> = emptyList()
 
     override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
         clients.add(conn)
         onClientCountChanged(clients.size)
         conn.send(buildNameListJson(currentNames))
+        conn.send(buildAbsentListJson(currentAbsentNames))
     }
 
     override fun onMessage(conn: WebSocket, message: String) {
@@ -46,8 +48,21 @@ class EmbeddedWebSocketServer(
         }
     }
 
+    fun broadcastAbsentList(names: List<String>) {
+        currentAbsentNames = names
+        val json = buildAbsentListJson(names)
+        synchronized(clients) {
+            clients.forEach { if (it.isOpen) it.send(json) }
+        }
+    }
+
     private fun buildNameListJson(names: List<String>): String {
-        val namesJson = names.joinToString(",") { "\"$it\"" }
-        return """{"type":"name_list","names":[$namesJson]}"""
+        val arr = names.joinToString(",") { "\"$it\"" }
+        return """{"type":"name_list","names":[$arr]}"""
+    }
+
+    private fun buildAbsentListJson(names: List<String>): String {
+        val arr = names.joinToString(",") { "\"$it\"" }
+        return """{"type":"absent_list","names":[$arr]}"""
     }
 }

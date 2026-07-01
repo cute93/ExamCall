@@ -19,8 +19,10 @@ fun ServerScreen(
     names: List<String>,
     calledName: String?,
     clientCount: Int,
+    absentNames: Set<String>,
     onAddName: (String) -> Unit,
     onDeleteName: (String) -> Unit,
+    onToggleAbsent: (String) -> Unit,
     onDismiss: () -> Unit,
     onExit: () -> Unit
 ) {
@@ -74,11 +76,29 @@ fun ServerScreen(
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
             items(names) { name ->
+                val isAbsent = name in absentNames
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(name, fontSize = 18.sp, modifier = Modifier.weight(1f))
+                    Text(
+                        name,
+                        fontSize = 18.sp,
+                        modifier = Modifier.weight(1f),
+                        color = if (isAbsent) MaterialTheme.colorScheme.error
+                                else MaterialTheme.colorScheme.onSurface
+                    )
+                    FilledTonalButton(
+                        onClick = { onToggleAbsent(name) },
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = if (isAbsent) MaterialTheme.colorScheme.errorContainer
+                                            else MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = if (isAbsent) MaterialTheme.colorScheme.error
+                                           else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        Text(if (isAbsent) "부재중" else "자리있음", fontSize = 13.sp)
+                    }
                     IconButton(onClick = { onDeleteName(name) }) {
                         Icon(Icons.Default.Delete, contentDescription = "삭제")
                     }

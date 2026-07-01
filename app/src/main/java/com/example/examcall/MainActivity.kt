@@ -34,13 +34,16 @@ class MainActivity : ComponentActivity() {
                         val calledName by serverViewModel.calledName.collectAsState()
                         val clientCount by serverViewModel.clientCount.collectAsState()
                         val serverName by serverViewModel.serverName.collectAsState()
+                        val absentNames by serverViewModel.absentNames.collectAsState()
                         ServerScreen(
                             serverName = serverName,
                             names = names,
                             calledName = calledName,
                             clientCount = clientCount,
+                            absentNames = absentNames,
                             onAddName = serverViewModel::addName,
                             onDeleteName = serverViewModel::deleteName,
+                            onToggleAbsent = serverViewModel::toggleAbsent,
                             onDismiss = serverViewModel::dismissCalledName,
                             onExit = { screen = Screen.ModeSelect }
                         )
@@ -60,10 +63,12 @@ class MainActivity : ComponentActivity() {
                         val names by clientViewModel.names.collectAsState()
                         val isConnected by clientViewModel.isConnected.collectAsState()
                         val connectedServer by clientViewModel.connectedServer.collectAsState()
+                        val absentNames by clientViewModel.absentNames.collectAsState()
                         ClientScreen(
                             serverName = connectedServer?.name ?: "",
                             names = names,
                             isConnected = isConnected,
+                            absentNames = absentNames,
                             onCall = clientViewModel::sendCall,
                             onChangeServer = {
                                 clientViewModel.disconnect()
